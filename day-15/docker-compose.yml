@@ -1,0 +1,62 @@
+version: '3.4'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - data:/data/db
+  rabbitmq:
+    image: rabbitmq:3.10-rc-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  products:
+    image: products
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4000:4000
+    depends_on:
+      - mongodb
+      - rabbitmq  
+  authservice:
+    image: authservice
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4003:4003
+    depends_on:
+      - mongodb
+      - rabbitmq  
+  query:
+    image: query
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4002:4002
+    depends_on:
+      - mongodb
+      - rabbitmq  
+  reviws:
+    image: reviews
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4001:4001
+    depends_on:
+      - mongodb
+      - rabbitmq
+volumes:
+  data:
+    driver: local                  
+  
